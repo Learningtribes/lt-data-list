@@ -16,16 +16,22 @@ i18n
         },*/
         // we init with resources
         resources: {
-            en: {
+            de_de: {
                 translation: {
-                    "Page":"Page",
-                    "of":"of"
+                    "Page": "Seite",
+                    "of": "von"
                 }
             },
-            zh_cn: {
-                translation:{
-                    "Page": "第",
-                    "of": "页,共"
+            es_419: {
+                translation: {
+                    "Page": "Página",
+                    "of": "de"
+                }
+            },
+            en: {
+                translation: {
+                    "Page": "Page",
+                    "of": "of"
                 }
             },
             fr: {
@@ -34,10 +40,22 @@ i18n
                     "of": "de"
                 }
             },
+            it_it: {
+                translation: {
+                    "Page": "Pagina",
+                    "of": "di"
+                }
+            },
             pt_br: {
                 translation:{
                     "Page": "Página",
                     "of": "de"
+                }
+            },
+            zh_cn: {
+                translation:{
+                    "Page": "第",
+                    "of": "页,共"
                 }
             }
         },

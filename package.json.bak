@@ -1,5 +1,5 @@
 {
-  "name": "se-react-data-list",
+  "name": "lt-react-data-list",
   "version": "1.0.5",
   "main": "dist/component.js",
   "scripts": {
@@ -41,11 +41,11 @@
   "dependencies": {
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
-    "se-react-dropdown": "^1.0.14"
+    "lt-react-dropdown": "^1.0.14"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/seancy/se-react-checkbox-group.git"
+    "url": "git+https://github.com/Learningtribes/lt-react-checkbox-group.git"
   },
   "keywords": [
     "react",
@@ -53,8 +53,8 @@
     "range"
   ],
   "bugs": {
-    "url": "https://github.com/seancy/se-react-checkbox-group/issues"
+    "url": "https://github.com/Learningtribes/lt-react-checkbox-group/issues"
   },
-  "homepage": "https://github.com/seancy/se-react-checkbox-group#readme",
+  "homepage": "https://github.com/Learningtribes/lt-react-checkbox-group#readme",
   "description": "scope element Dropdown"
 }

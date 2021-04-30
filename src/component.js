@@ -5,7 +5,7 @@ import LeftIcon from "./chevron-left-solid.svg"
 import RightIcon from "./chevron-right-solid.svg"
 import UpIcon from './sort-up-solid.svg'
 import DownIcon from './sort-down-solid.svg'
-import Dropdown from 'se-react-dropdown'
+import Dropdown from 'lt-react-dropdown'
 import { withTranslation } from "react-i18next";
 import './i18n'
 import {formatFieldName} from './common'
@@ -221,7 +221,7 @@ class Component0 extends React.Component {
         const {pagination, isLoading, data, message, totalRowsText, defaultLanguage} = this.props;
         const showHeaderAndFooter = !isLoading && !message && (data && data.length>0)
         return (
-            <div className={'se-react-data-list ' + (this.props.className || '') + (isLoading?' loading':'')}>
+            <div className={'lt-react-data-list ' + (this.props.className || '') + (isLoading?' loading':'')}>
                 <div className="table-wrapper">
                     <table>
                         {showHeaderAndFooter && this.getHeader()}
