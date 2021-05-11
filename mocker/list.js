@@ -36,9 +36,9 @@ let list = [
         age: 5
     }
 ]
-list = [...Array(3).keys()].reduce((prev, key) => {
-    return prev.concat(list.map(item => ({ ...item, id: (key) * 5 + item.id})))
-}, [])
-
+list = Array.from(Array(3), _ => list).reduce((r, c) => r.concat(c)).map((item, i) => ({
+    ...item,
+    id: i + 1
+}))
 
 module.exports = list

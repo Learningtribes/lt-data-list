@@ -58,12 +58,14 @@ class App extends BaseReport {
         }
 
         this.myRef = React.createRef();
+    }
+
+    componentDidMount () {
         this.fetchData(1)
     }
 
     loadData() {
         this.fetchData(1)
-        this.myRef.current.resetPage()
     }
 
     loadError(){
@@ -91,6 +93,7 @@ class App extends BaseReport {
     }
 
     fetchData(pageNo, sort='+id') {
+        console.log('onPageChange', pageNo) // TODELETE
         //let data = {a1: '11', a2: '22'}
         //let parametersStr = Object.keys(data).map(k => `${encodeURIComponent(k)}=${encodeURIComponent(data[k])}`).join('&')
 
@@ -143,7 +146,6 @@ class App extends BaseReport {
                 })
             }
         })
-
     }
 
     getDynamicFields(){
@@ -205,7 +207,7 @@ class App extends BaseReport {
             keyField:"ID",
             defaultLanguage:"en",
             enableRowsCount:true,
-            useFontAwesome:true,
+            useFontAwesome: !true,
             ...this.state
         }
     }
@@ -226,4 +228,3 @@ class App extends BaseReport {
 }
 
 render(<App/>, document.querySelector(".root"));
-
