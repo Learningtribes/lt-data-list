@@ -1,4 +1,4 @@
-import React,{Suspense} from "react";
+import React,{useRef, useEffect, useState} from "react";
 import PropTypes from 'prop-types'
 import "./component.scss"
 import LeftIcon from "./chevron-left-solid.svg"
@@ -9,6 +9,9 @@ import Dropdown from 'lt-react-dropdown'
 import { withTranslation } from "react-i18next";
 import './i18n'
 import {formatFieldName} from './common'
+
+
+let paginationKey = 0
 
 class Component0 extends React.Component {
     constructor(props, context) {
@@ -25,37 +28,14 @@ class Component0 extends React.Component {
         }
     }
 
-    resetPage() {
-        this.setState({pageNo:1 })
+    resetPage (pageNo = 1) {
+        this.setState({pageNo})
+        paginationKey++
     }
 
-    firePageChange(){
+    firePageChange (pageNo) {
         const {onPageChange} = this.props
-        onPageChange && onPageChange(this.state.pageNo, this.state.sort)
-    }
-
-    goPrevPage(e){
-        if (e.currentTarget.classList.contains('disabled')) return
-        this.setState((s,p)=>{
-            let pageNo = s.pageNo - 1
-            return {
-                pageNo
-            }
-        },this.firePageChange)
-    }
-
-    goNextPage(e){
-        if (e.currentTarget.classList.contains('disabled')) return
-        this.setState((s,p)=>{
-            let pageNo = s.pageNo + 1
-            return {
-                pageNo
-            }
-        },this.firePageChange)
-    }
-
-    switchPage(item){
-        this.setState({pageNo:item.value}, this.firePageChange)
+        onPageChange && onPageChange(pageNo, this.state.sort)
     }
 
     getFieldsWithoutKeyField(){
@@ -192,31 +172,6 @@ class Component0 extends React.Component {
         </tfoot>)
     }
 
-    generatePagination(){
-        const {pageNo} = this.state;
-        const {pageSize=9999, rowsCount=0} = this.props.pagination
-        let pageCount = Math.ceil(rowsCount / pageSize)
-        let pages = [...Array(pageCount).keys()].splice(1);
-        pages = [...pages, pageCount || 1]
-        pages = pages.map(p=>({value:p}))
-        const { t, useFontAwesome } = this.props;
-
-        const Left = (props) => {
-            return useFontAwesome ? (<i {...{...props, className:`fal fa-chevron-left ${props.className}`}}/>) : (<LeftIcon {...props}/>)
-        }, Right = (props) => {
-            return useFontAwesome ? <i {...{...props, className:`fal fa-chevron-right ${props.className}`}}/> : <RightIcon {...props}/>;
-        }
-
-        return (<div className="pagination">
-                    <Left onClick={this.goPrevPage.bind(this)} className={"prev-page"+ (pageNo<=1 ? " disabled" : '')}/>
-                    <span>{t('Page')}</span>
-                    <Dropdown data={pages} value={pageNo} onChange={this.switchPage.bind(this)}/>
-                    <span>{t('of')} {pageCount}</span>
-                    <Right onClick={this.goNextPage.bind(this)}
-                               className={'next-page' + (pageNo>pageCount-1 ? ' disabled' : '')}/>
-                </div>)
-    }
-
     render() {
         const {pagination, isLoading, data, message, totalRowsText, defaultLanguage} = this.props;
         const showHeaderAndFooter = !isLoading && !message && (data && data.length>0)
@@ -234,10 +189,79 @@ class Component0 extends React.Component {
                         '*', defaultLanguage ? Number(pagination['rowsCount']).toLocaleString(defaultLanguage) : pagination['rowsCount']
                     )}</div>
                 )}
-                {pagination && this.generatePagination()}
+                {pagination && (
+                    <Pagination {...this.props}
+                      key={paginationKey}
+                      pageNo={this.state.pageNo}
+                      onChange={this.firePageChange.bind(this)}
+                    />
+                )}
             </div>
         );
     }
+}
+
+function Pagination (props) {
+    const {pageSize = 9999, rowsCount = 0} = props.pagination
+
+    const pageCount = Math.ceil(rowsCount / pageSize)
+    const pages = [...Array(pageCount).keys()].splice(1).concat(pageCount || 1).map(p=>({value: p}))
+    const { t, useFontAwesome, pageNo: propPageNo } = props
+
+    const [pageNo, setPageNo] = useState(props.pageNo || 0)
+
+    const $dropDown = useRef(null)
+
+    useEffect(() => {
+        setPageNo(propPageNo)
+    }, [propPageNo])
+
+    const switchPage = (item) => setPageNo(prev => {
+        const page = Number(item.value)
+        if (props.onChange) props.onChange(page)
+        return page
+    })
+
+    const goPrevPage = (e) => {
+        if (e.currentTarget.classList.contains('disabled')) return
+
+        setPageNo(prev => {
+            const page = prev - 1
+            if ($dropDown.current) {
+                requestAnimationFrame(() => $dropDown.current.select({value: page}))
+            }
+            return page
+        })
+    }
+
+    const goNextPage = (e) => {
+        if (e.currentTarget.classList.contains('disabled')) return
+
+        setPageNo(prev => {
+            const page = prev + 1
+            if ($dropDown.current) {
+                requestAnimationFrame(() => $dropDown.current.select({value: page}))
+            }
+            return page
+        })
+    }
+
+    const Left = (props) => (
+        useFontAwesome ? (<i {...{...props, className:`fal fa-chevron-left ${props.className}`}}/>) : (<LeftIcon {...props}/>)
+    )
+    const Right = (props) => (
+        useFontAwesome ? <i {...{...props, className:`fal fa-chevron-right ${props.className}`}}/> : <RightIcon {...props}/>
+    )
+
+    return (
+        <div className="pagination">
+            <Left onClick={goPrevPage} className={"prev-page"+ (pageNo <= 1 ? " disabled" : '')}/>
+            <span>{t('Page')}</span>
+            <Dropdown ref={$dropDown} data={pages} value={pageNo} onChange={switchPage}/>
+            <span>{t('of')} {pageCount}</span>
+            <Right onClick={goNextPage} className={'next-page' + (pageNo > pageCount - 1 ? ' disabled' : '')}/>
+        </div>
+    )
 }
 
 const Component = withTranslation(undefined, { withRef: true })(Component0)
