@@ -1,3 +1,4 @@
+name: npm publish --dry-run
 on: pull_request
 
 jobs:
