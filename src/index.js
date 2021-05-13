@@ -56,8 +56,6 @@ class App extends BaseReport {
             ...this.state,
             isLoading: false
         }
-
-        this.myRef = React.createRef();
     }
 
     componentDidMount () {
@@ -218,10 +216,9 @@ class App extends BaseReport {
             <div style={styles}>
                 <button className="btn-load-data" onClick={this.loadData.bind(this)}>Load Data</button>
                 <button className="btn-load-data" onClick={this.loadError.bind(this)}>Load Error</button>
-                <Component ref={this.myRef}
-                           {...config} {...extraProps}
-                           onPageChange={this.fetchData.bind(this)}
-                />
+                <Component {...config} {...extraProps} onPageChange={this.fetchData.bind(this)} />
+
+                <Component {...config} {...extraProps} onPageChange={this.fetchData.bind(this)} doubleScroll className="component--double-scroll"/>
             </div>
         );
     }
