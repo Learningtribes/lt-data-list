@@ -17,3 +17,9 @@ body {
   height: 1px;
   margin: 10px 0;
 }
+
+.component--double-scroll {
+  div.table-wrapper {
+    width: 200px;
+  }
+}

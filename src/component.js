@@ -1,4 +1,4 @@
-import React,{useRef, useEffect, useState} from "react";
+import React,{useRef, useEffect, useState, Fragment} from "react";
 import PropTypes from 'prop-types'
 import "./component.scss"
 import LeftIcon from "./chevron-left-solid.svg"
@@ -136,27 +136,33 @@ class Component0 extends React.Component {
         )
     }
 
-    getBody(){
+    getBody() {
         const {data, isLoading, message, emptyText='nothing'} = this.props;
-        const {}=this.state
         const fields = this.getFieldsWithoutKeyField()
-        let row = ''
-        if (isLoading){
-            row = (<tr><td className="loading-icon-wrapper" colSpan={fields && fields.length}><i className="fa fa-spinner fa-spin"></i></td></tr>)
-        }else if(message){
-            row = <tr><td className="cell-notification" colSpan={fields && fields.length}>{message}</td></tr>
-        }else{
-            row = (data.length <= 0)?
-                (<tr><td className="cell-notification" colSpan={fields && fields.length}>{emptyText}</td></tr>) :
-                data.map((row,index) => {
-                    return this.getRow(row, index)
+
+        if (isLoading) return (
+            <tbody>
+                <tr><td className="loading-icon-wrapper" colSpan={fields && fields.length}><i className="fa fa-spinner fa-spin"></i></td></tr>
+            </tbody>
+        )
+
+        if (message) return (
+            <tbody>
+                <tr><td className="cell-notification" colSpan={fields && fields.length}>{message}</td></tr>
+            </tbody>
+        )
+
+        return (
+            <tbody>
+                {data.length <= 0
+                    ? <tr><td className="cell-notification" colSpan={fields && fields.length}>{emptyText}</td></tr>
+                    : data.map((row, index) => this.getRow(row, index))
                 }
-            )
-        }
-        return (<tbody>{row}</tbody>)
+            </tbody>
+        )
     }
 
-    getFooter(){
+    getFooter() {
         const {totalData, isLoading, subFields} = this.props;
         const fields = this.getFieldsWithoutKeyField()
         const cellRender=item=>{
@@ -177,13 +183,14 @@ class Component0 extends React.Component {
         const showHeaderAndFooter = !isLoading && !message && (data && data.length>0)
         return (
             <div className={'lt-react-data-list ' + (this.props.className || '') + (isLoading?' loading':'')}>
-                <div className="table-wrapper">
+                <DoubleScroll enable={this.props.doubleScroll} className="table-wrapper">
                     <table>
                         {showHeaderAndFooter && this.getHeader()}
                         {this.getBody()}
                         {showHeaderAndFooter && this.getFooter()}
                     </table>
-                </div>
+                </DoubleScroll>
+
                 {this.props.enableRowsCount && pagination && !isLoading && (
                     <div className="total-rows">{(totalRowsText || 'Total: * rows').replace(
                         '*', defaultLanguage ? Number(pagination['rowsCount']).toLocaleString(defaultLanguage) : pagination['rowsCount']
@@ -199,6 +206,53 @@ class Component0 extends React.Component {
             </div>
         );
     }
+}
+
+function DoubleScroll ({children, enable, className}) {
+    if (!enable || !children) return (
+        <div className={className}>
+            {children}
+        </div>
+    )
+
+    const target = useRef(null)
+    const scarecrow = useRef(null)
+
+    useEffect(() => {
+        scarecrow.current.style.setProperty('height', '6px', "important")
+        scarecrow.current.style.setProperty('overflow-y', 'hidden', "important")
+    }, [])
+
+    const onScarecrowScroll = e => {
+        target.current.scrollLeft = scarecrow.current.scrollLeft
+    }
+
+    const onTargetScroll = e => {
+        scarecrow.current.scrollLeft = target.current.scrollLeft
+    }
+
+    useEffect(() => {
+        if (target.current && scarecrow.current) {
+            target.current.addEventListener('scroll', onTargetScroll, { passive: true })
+            scarecrow.current.addEventListener('scroll', onScarecrowScroll, { passive: true })
+
+            return () => {
+                target.current.removeEventListener('scroll', onTargetScroll)
+                scarecrow.current.removeEventListener('scroll', onScarecrowScroll)
+            }
+        }
+    }, [target, scarecrow])
+
+    return (
+        <Fragment>
+            <div className={'scrollscarecrow__wrapper ' + className} ref={scarecrow}>
+                {children}
+            </div>
+            <div className={className} ref={target}>
+                {children}
+            </div>
+        </Fragment>
+    )
 }
 
 function Pagination (props) {

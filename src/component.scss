@@ -16,6 +16,7 @@
     &::-webkit-scrollbar-thumb {
       background: #888;
       border-radius: 3px;
+      border-color: #888;
     }
 
     /* Handle on hover */
@@ -83,6 +84,12 @@
 
     .next-page{
       margin-left: $space-between
+    }
+  }
+
+  .scrollscarecrow__wrapper {
+    * {
+      visibility: hidden;
     }
   }
 }
