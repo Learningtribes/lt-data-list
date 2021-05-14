@@ -1,6 +1,6 @@
 {
   "name": "lt-react-data-list",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "main": "dist/component.js",
   "scripts": {
     "start": "webpack-dev-server --config webpack.dev.config.js ",
