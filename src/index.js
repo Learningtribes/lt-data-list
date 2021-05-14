@@ -35,6 +35,8 @@ let fields = [
     {name: 'Email', fieldName: 'Email'},
 ]
 
+const sleep = ms => new Promise(r => setTimeout(r, ms))
+
 class BaseReport extends React.Component{
     constructor(props){
         super(props)
@@ -92,57 +94,59 @@ class App extends BaseReport {
 
     fetchData(pageNo, sort='+id') {
         console.log('onPageChange', pageNo) // TODELETE
-        //let data = {a1: '11', a2: '22'}
-        //let parametersStr = Object.keys(data).map(k => `${encodeURIComponent(k)}=${encodeURIComponent(data[k])}`).join('&')
-
-        //const url = `real_data.json`
-        //const url = 'course_report.json'
-        //const url = 'course_report_time_spent2.json'
-        const url = '/api/user/list/'
-
-        let toolbarData = {
-            selectedFilterItems: [
-                {text: "Address", value: "De street"},
-                {text: "Country", value: "France"},
-            ],
-            selectedProperties: [
-                {text: "Address", value: "user__profile__lt_address", checked: true},
-                {text: "City", value: "user__profile__city", checked: true}
-            ],
-            startDate: "2020-02-05",
-            endDate: "2020-02-07",
-            exportType: "xls"
-        }
-        let ajaxData = {...{
-            'report_type': 'learner_report',
-            'courses_selected': [''],
-            'query_tuples': toolbarData.selectedFilterItems.map(p => [p.text, p.value]),
-            'selected_properties': toolbarData.selectedProperties.map(p => p.value),
-            'from_day': toolbarData.startDate,
-            'to_day': toolbarData.endDate,
-            'format': toolbarData.exportType,
-            'csrfmiddlewaretoken': 'nDou5pR169v76UwtX4XOpbQsSTLu6SexeWyd0ykjGR2ahYMV0OY7nddkYQqnT6ze',
-            'page': {
-                no: pageNo, size: PAGE_SIZE
-            },
-        }, ...(sort!=''?{sort}:{})}
-
         this.setState({isLoading: true})
-        $.ajax(url, {
-            method:'get',
-            dataType: 'json',
-            data: ajaxData,
-            success:(json) => {
-                this.setState((s, p) => {
-                    return {
-                        message:'',
-                        isLoading: false,
-                        data: json.list,
-                        totalData: json.total, //{email: 'total:', first_name: json.total},
-                        rowsCount: get(json,'pagination.rowsCount',0)
-                    }
-                })
+        sleep(1000).then(() => {
+            //let data = {a1: '11', a2: '22'}
+            //let parametersStr = Object.keys(data).map(k => `${encodeURIComponent(k)}=${encodeURIComponent(data[k])}`).join('&')
+
+            //const url = `real_data.json`
+            //const url = 'course_report.json'
+            //const url = 'course_report_time_spent2.json'
+            const url = '/api/user/list/'
+
+            let toolbarData = {
+                selectedFilterItems: [
+                    {text: "Address", value: "De street"},
+                    {text: "Country", value: "France"},
+                ],
+                selectedProperties: [
+                    {text: "Address", value: "user__profile__lt_address", checked: true},
+                    {text: "City", value: "user__profile__city", checked: true}
+                ],
+                startDate: "2020-02-05",
+                endDate: "2020-02-07",
+                exportType: "xls"
             }
+            let ajaxData = {...{
+                'report_type': 'learner_report',
+                'courses_selected': [''],
+                'query_tuples': toolbarData.selectedFilterItems.map(p => [p.text, p.value]),
+                'selected_properties': toolbarData.selectedProperties.map(p => p.value),
+                'from_day': toolbarData.startDate,
+                'to_day': toolbarData.endDate,
+                'format': toolbarData.exportType,
+                'csrfmiddlewaretoken': 'nDou5pR169v76UwtX4XOpbQsSTLu6SexeWyd0ykjGR2ahYMV0OY7nddkYQqnT6ze',
+                'page': {
+                    no: pageNo, size: PAGE_SIZE
+                },
+            }, ...(sort!=''?{sort}:{})}
+
+            $.ajax(url, {
+                method:'get',
+                dataType: 'json',
+                data: ajaxData,
+                success:(json) => {
+                    this.setState((s, p) => {
+                        return {
+                            message:'',
+                            isLoading: false,
+                            data: json.list,
+                            totalData: json.total, //{email: 'total:', first_name: json.total},
+                            rowsCount: get(json,'pagination.rowsCount',0)
+                        }
+                    })
+                }
+            })
         })
     }
 
