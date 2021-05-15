@@ -218,9 +218,50 @@ function DoubleScroll ({children, enable, className}) {
     const target = useRef(null)
     const scarecrow = useRef(null)
 
+    const setScarecrowHeight = (height) => {
+        scarecrow.current.style.setProperty('min-height', height, "important")
+        scarecrow.current.style.setProperty('height', height, "important")
+        scarecrow.current.style.setProperty('max-height', height, "important")
+
+    }
+    const showScarecrow = () => {
+        setScarecrowHeight('6px')
+        scarecrow.current.style.setProperty('visibility', 'visible', "important")
+    }
+    const hideScarecrow = () => {
+        setScarecrowHeight('1px')
+        scarecrow.current.style.setProperty('visibility', 'hidden', "important")
+    }
+
     useEffect(() => {
-        scarecrow.current.style.setProperty('height', '6px', "important")
+        hideScarecrow()
         scarecrow.current.style.setProperty('overflow-y', 'hidden', "important")
+
+        let resizeObserver
+        if (window.ResizeObserver) {
+            resizeObserver = new ResizeObserver(entries => entries.forEach(entry => {
+                if (entry.target.scrollWidth > entry.target.clientWidth) showScarecrow()
+                else hideScarecrow()
+            }))
+            resizeObserver.observe(scarecrow.current)
+        } else {
+            let tomb
+            const checkSscarecrowSize = () => {
+                if (scarecrow.current.scrollWidth > scarecrow.current.clientWidth) showScarecrow()
+                else hideScarecrow()
+                tomb = setTimeout(checkSscarecrowSize, 100)
+            }
+            checkSscarecrowSize()
+            resizeObserver = {
+                disconnect () {
+                    clearTimeout(tomb)
+                }
+            }
+        }
+
+        return () => {
+            if (resizeObserver) resizeObserver.disconnect()
+        }
     }, [])
 
     const onScarecrowScroll = e => {
